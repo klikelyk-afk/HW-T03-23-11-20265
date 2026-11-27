@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: cars_owner_db
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - carsnet
+
+  api:
+    build: .
+    ports:
+      - "5001:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - carsnet
+
+networks:
+  carsnet:
